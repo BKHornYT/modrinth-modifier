@@ -90,14 +90,16 @@ ipcMain.handle('check-update', () => {
   return new Promise(resolve => {
     const req = https.get({
       hostname: 'api.github.com',
-      path: '/repos/BKHornYT/modrinth-modifier/releases/latest',
+      path: '/repos/BKHornYT/modrinth-modifier/releases?per_page=1',
       headers: { 'User-Agent': 'modrinth-modifier' }
     }, res => {
       let data = ''
       res.on('data', c => data += c)
       res.on('end', () => {
         try {
-          const json = JSON.parse(data)
+          const list = JSON.parse(data)
+          const json = Array.isArray(list) ? list[0] : list
+          if (!json) return resolve(null)
           const asset = (json.assets || []).find(a => a.name.endsWith('.exe'))
           resolve({
             tag: json.tag_name,
