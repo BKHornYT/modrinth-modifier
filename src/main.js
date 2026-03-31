@@ -82,3 +82,6 @@ ipcMain.handle('set-playtime', async (_, { profilePath, submitted, recent }) => 
 ipcMain.on('close-window', () => win.close())
 ipcMain.on('minimize-window', () => win.minimize())
 ipcMain.handle('get-version', () => app.getVersion())
+ipcMain.handle('get-icon-path', () => {
+  return 'file://' + path.join(__dirname, '..', 'assets', 'icon.png').replace(/\\/g, '/')
+})

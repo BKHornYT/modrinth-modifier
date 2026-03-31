@@ -1,56 +1,69 @@
 # Modrinth Modifier — Claude Instructions
 
 ## Project Overview
-**Modrinth Modifier** is a utility app for the Modrinth launcher. Currently it features a playtime editor — lists all Modrinth profiles and lets the user edit playtime values directly in the SQLite database. The longer-term goal is a full mod manager that can inject JS mods into the Modrinth launcher.
+**Modrinth Modifier** is a utility/mod manager app for the Modrinth launcher. Currently in **beta**.
+
+Current features:
+- **Playtime Editor** — view and edit playtime on all Modrinth profiles via SQLite
+
+Planned features (sidebar shows "Soon"):
+- Mod Manager — inject JS mods into a copy of the Modrinth launcher
+- Launcher — launch Modrinth from the app (needed for mod injection)
+- Settings
 
 GitHub: https://github.com/BKHornYT/modrinth-modifier
 
 ## Rules
-
-- Always keep this `CLAUDE.md` up to date. Update it whenever the project's purpose, stack, structure, or key decisions change, so any future session can resume without losing context.
-- Always update `task.md` when actively working — record current task, progress, and what's next.
-- Always update `changes.md` after every change — include what changed and why.
+- Always keep this `CLAUDE.md` up to date whenever purpose, stack, structure, or key decisions change.
+- Always update `task.md` when actively working.
+- Always update `changes.md` after every change.
+- **Before any UI changes:** copy current `src/` to `backup/vX.X.X/` first. Only publish to GitHub when the new version works.
 
 ## Stack / Tech
 - **Electron 33** — desktop app framework
-- **sql.js** — pure WASM SQLite (no native compilation needed), reads/writes Modrinth's `app.db`
-- **HTML/CSS/JS** — frontend UI (dark theme, frameless window, custom titlebar)
-- **@electron/packager** — packages app into `dist/Modrinth Modifier-win32-x64/`
-- **NSIS** (installed at `C:\Program Files (x86)\NSIS\`) — builds the Windows installer via `scripts/installer.nsi`
-- **electron-winstaller** — previously used, replaced by NSIS for proper install wizard
+- **sql.js** — pure WASM SQLite, reads/writes Modrinth's `app.db`
+- **HTML/CSS/JS** — frontend (dark theme, frameless, custom titlebar, sidebar nav)
+- **@electron/packager** — bundles to `dist/Modrinth Modifier-win32-x64/`
+- **NSIS** (`C:\Program Files (x86)\NSIS\`) — produces the Windows installer via `scripts/installer.nsi`
 
 ## File Structure
 ```
 src/
-  main.js         — Electron main process, IPC handlers, SQLite read/write, version
-  preload.js      — Exposes API to renderer via contextBridge
-  index.html      — UI shell (titlebar with version badge, layout, styles)
-  renderer.js     — Profile rendering, edit logic, time formatting, event delegation
+  main.js         — Electron main, IPC (profiles, playtime, version, icon path)
+  preload.js      — contextBridge API surface
+  index.html      — Sidebar layout, titlebar (version badge + BETA badge), page shells
+  renderer.js     — Profile list render, edit panel, save logic, nav (future)
 assets/
   icon.png        — App icon (user's recolored Modrinth logo)
-  icon.ico        — ICO converted from icon.png (used by packager + NSIS)
+  icon.ico        — ICO for packager + NSIS
   icon.svg        — Original Modrinth SVG
+backup/
+  vX.X.X/        — Snapshot of src/ before changes (manual safety net)
 scripts/
-  installer.nsi   — NSIS script: install wizard, desktop shortcut, Start Menu, Add/Remove Programs
-  make-installer.js — Node script that runs makensis to produce the installer exe
-package.json      — deps + build scripts
+  installer.nsi   — NSIS installer script
+  make-installer.js — Runs makensis, supports both winget+choco NSIS paths
+package.json      — deps + scripts
+.github/workflows/release.yml — Auto-build + release on vX.X.X tag push
 ```
 
-## Build Process
+## Build & Release Process
+```bash
+npm run build      # packages + creates dist/installer/ModrinthModifier-setup.exe
+npm start          # dev mode
 ```
-npm run build
-```
-1. `electron-packager` → `dist/Modrinth Modifier-win32-x64/`
-2. `makensis scripts/installer.nsi` → `dist/installer/ModrinthModifier-setup.exe`
 
-To run in dev: `npm start`
+**To release a new version:**
+1. Back up `src/` to `backup/vX.X.X/`
+2. Make changes, test locally with `npm start`
+3. Bump version in `package.json`
+4. `git tag vX.X.X && git push origin vX.X.X`
+5. GitHub Actions builds the installer and creates a GitHub Release automatically
 
-## Key Decisions & Notes
-- App name: **Modrinth Modifier** (was "bkrinth" during planning)
-- Modrinth's SQLite DB is at `%APPDATA%\Roaming\ModrinthApp\app.db` (confirmed on user's machine)
-- Playtime fields: `submitted_time_played` and `recent_time_played` (both in seconds) in `profiles` table
-- sql.js reads entire db into memory, modifies, writes back — Modrinth must be closed when saving
-- Installer uses NSIS (not electron-builder) — electron-builder failed due to Windows symlink permissions blocking winCodeSign extraction
-- Installer runs as user-level (no UAC), installs to `%LOCALAPPDATA%\Modrinth Modifier`
-- Version shown in titlebar, pulled from `package.json` via `app.getVersion()` IPC
-- Modrinth launcher is Tauri 2.x (Rust + Vue 3 WebView) — future mod injection plan is to copy launcher to a temp location and patch frontend assets there, then launch the copy
+## Key Technical Notes
+- Modrinth DB: `%APPDATA%\Roaming\ModrinthApp\app.db` — `profiles` table, `submitted_time_played` + `recent_time_played` columns (seconds)
+- sql.js reads the whole DB into memory, modifies, writes back — Modrinth must be closed
+- Icon is loaded via `file://` IPC call (`get-icon-path`) since `../assets/` doesn't resolve inside asar
+- NSIS installer: user-level install (no UAC), installs to `%LOCALAPPDATA%\Modrinth Modifier`, desktop + Start Menu shortcuts, Add/Remove Programs entry
+- electron-builder was abandoned — its winCodeSign download fails on Windows without Developer Mode (symlink permission issue)
+- GitHub Actions workflow has `permissions: contents: write` — required to create releases
+- Beta badge shown in titlebar; version pulled from `package.json` via `app.getVersion()` IPC

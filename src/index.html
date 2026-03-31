@@ -2,21 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' file:" />
   <title>Modrinth Modifier</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #0d0d0d;
-      --surface: #141414;
-      --surface2: #1a1a1a;
-      --border: #242424;
+      --bg: #0e0e0e;
+      --sidebar: #111111;
+      --surface: #181818;
+      --surface2: #1e1e1e;
+      --border: #222222;
+      --border2: #2a2a2a;
       --accent: #1bd96a;
-      --accent-dim: rgba(27, 217, 106, 0.12);
-      --text: #e8e8e8;
-      --text-dim: #666;
-      --text-mid: #999;
+      --accent-dim: rgba(27, 217, 106, 0.1);
+      --text: #e0e0e0;
+      --text-dim: #555;
+      --text-mid: #888;
       --danger: #e05252;
     }
 
@@ -31,65 +33,87 @@
       user-select: none;
     }
 
-    /* Titlebar */
+    /* ── Titlebar ── */
     .titlebar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px;
-      height: 42px;
-      background: var(--surface);
+      height: 38px;
+      background: var(--sidebar);
       border-bottom: 1px solid var(--border);
       -webkit-app-region: drag;
       flex-shrink: 0;
+      padding: 0 12px 0 0;
     }
 
     .titlebar-left {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 0;
+      height: 100%;
     }
 
-    .logo {
-      width: 20px;
-      height: 20px;
-      background: var(--accent);
-      border-radius: 5px;
+    .titlebar-icon {
+      width: 38px;
+      height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
-      font-weight: 800;
-      color: #000;
-      letter-spacing: -0.5px;
+      flex-shrink: 0;
     }
 
-    .titlebar-title {
-      font-size: 13px;
+    .titlebar-icon img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+    }
+
+    .titlebar-name {
+      font-size: 12px;
       font-weight: 600;
       color: var(--text-mid);
-      letter-spacing: 0.3px;
+      letter-spacing: 0.2px;
     }
 
-    .titlebar-version {
-      font-size: 11px;
-      color: var(--text-dim);
+    .titlebar-badges {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-left: 8px;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .badge-beta {
+      background: rgba(255, 165, 0, 0.15);
+      color: #f0a030;
+      border: 1px solid rgba(255, 165, 0, 0.25);
+    }
+
+    .badge-version {
       background: var(--border);
-      padding: 2px 7px;
-      border-radius: 4px;
-      margin-left: 2px;
+      color: var(--text-dim);
+      border: 1px solid transparent;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
     }
 
     .titlebar-controls {
       display: flex;
-      gap: 6px;
       -webkit-app-region: no-drag;
     }
 
     .titlebar-btn {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
+      width: 38px;
+      height: 38px;
       border: none;
       background: transparent;
       color: var(--text-dim);
@@ -97,225 +121,284 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.15s, color 0.15s;
-      font-size: 14px;
+      transition: background 0.12s, color 0.12s;
+      font-size: 13px;
+      -webkit-app-region: no-drag;
     }
 
-    .titlebar-btn:hover { background: var(--border); color: var(--text); }
+    .titlebar-btn:hover { background: var(--border2); color: var(--text); }
     .titlebar-btn.close:hover { background: var(--danger); color: #fff; }
-    .titlebar-btn, .titlebar-controls { -webkit-app-region: no-drag; }
 
-    /* Content */
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 24px;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
-    }
-
-    .content::-webkit-scrollbar { width: 6px; }
-    .content::-webkit-scrollbar-track { background: transparent; }
-    .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-    .header {
-      margin-bottom: 24px;
-    }
-
-    .header h1 {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: -0.5px;
-    }
-
-    .header p {
-      font-size: 13px;
-      color: var(--text-dim);
-      margin-top: 4px;
-    }
-
-    /* Error */
-    .error-box {
-      background: rgba(224, 82, 82, 0.1);
-      border: 1px solid rgba(224, 82, 82, 0.3);
-      border-radius: 10px;
-      padding: 16px 20px;
-      color: var(--danger);
-      font-size: 13px;
-    }
-
-    /* Loading */
-    .loading {
+    /* ── Layout ── */
+    .layout {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text-dim);
-      font-size: 13px;
-      padding: 40px 0;
-      justify-content: center;
+      flex: 1;
+      overflow: hidden;
     }
 
-    .spinner {
-      width: 16px;
-      height: 16px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Profile cards */
-    .profiles {
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 200px;
+      flex-shrink: 0;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      padding: 8px 0;
+      overflow-y: auto;
     }
 
-    .profile-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 18px 20px;
-      transition: border-color 0.2s, background 0.2s;
+    .nav-section-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-dim);
+      padding: 12px 14px 6px;
     }
 
-    .profile-card:hover {
-      border-color: #333;
-      background: var(--surface2);
-    }
-
-    .profile-card.editing {
-      border-color: var(--accent);
-      background: var(--surface2);
-    }
-
-    .profile-top {
+    .nav-item {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-    }
-
-    .profile-name {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text);
-      letter-spacing: -0.2px;
-    }
-
-    .profile-time {
-      font-size: 13px;
+      gap: 9px;
+      padding: 7px 14px;
+      cursor: pointer;
+      border-radius: 0;
       color: var(--text-mid);
-      margin-top: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 0.1s, color 0.1s;
+      border-left: 2px solid transparent;
     }
 
-    .profile-time span {
-      color: var(--accent);
-      font-weight: 600;
+    .nav-item:hover {
+      background: var(--surface);
+      color: var(--text);
     }
 
-    .edit-btn {
+    .nav-item.active {
       background: var(--accent-dim);
       color: var(--accent);
-      border: 1px solid rgba(27, 217, 106, 0.2);
-      border-radius: 7px;
-      padding: 6px 14px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
+      border-left-color: var(--accent);
+    }
+
+    .nav-item.disabled {
+      opacity: 0.35;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .nav-icon {
+      width: 15px;
+      text-align: center;
+      font-size: 13px;
       flex-shrink: 0;
     }
 
-    .edit-btn:hover {
-      background: rgba(27, 217, 106, 0.2);
-      border-color: rgba(27, 217, 106, 0.4);
+    .nav-soon {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--text-dim);
+      margin-left: auto;
+      background: var(--border2);
+      padding: 1px 5px;
+      border-radius: 3px;
     }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 12px 14px;
+      font-size: 11px;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Main content ── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border2) transparent;
+    }
+
+    .main::-webkit-scrollbar { width: 5px; }
+    .main::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+    .page {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .page.active { display: flex; }
+
+    .page-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .page-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    .page-subtitle {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .page-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 24px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border2) transparent;
+    }
+
+    /* ── Profile list ── */
+    .profile-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .profile-row {
+      background: var(--surface);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.1s;
+    }
+
+    .profile-row:hover { background: var(--surface2); }
+    .profile-row.expanded { background: var(--surface2); }
+
+    .profile-row-info { flex: 1; min-width: 0; }
+
+    .profile-row-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .profile-row-time {
+      font-size: 12px;
+      color: var(--text-mid);
+      margin-top: 1px;
+    }
+
+    .profile-row-time b {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .btn-edit {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text-mid);
+      border-radius: 5px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.12s;
+      flex-shrink: 0;
+      font-family: inherit;
+    }
+
+    .btn-edit:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+    .profile-row.expanded .btn-edit { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 
     /* Edit panel */
     .edit-panel {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
       display: none;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 14px 16px;
       gap: 12px;
       flex-direction: column;
     }
 
-    .profile-card.editing .edit-panel {
-      display: flex;
-    }
+    .edit-panel.open { display: flex; }
 
     .edit-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
-    .edit-label {
+    .edit-lbl {
       font-size: 12px;
-      color: var(--text-dim);
-      width: 130px;
+      color: var(--text-mid);
+      width: 120px;
       flex-shrink: 0;
     }
 
-    .edit-inputs {
+    .time-fields {
       display: flex;
-      gap: 8px;
       align-items: center;
-      flex: 1;
+      gap: 6px;
     }
 
-    .time-input-group {
+    .time-field {
       display: flex;
       align-items: center;
       gap: 4px;
     }
 
-    .time-input-group label {
-      font-size: 11px;
-      color: var(--text-dim);
-    }
+    .time-field label { font-size: 11px; color: var(--text-dim); }
 
     input[type="number"] {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 7px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 5px;
       color: var(--text);
-      padding: 6px 10px;
+      padding: 5px 8px;
       font-size: 13px;
-      width: 72px;
+      width: 64px;
       outline: none;
-      transition: border-color 0.15s;
       font-family: inherit;
       -moz-appearance: textfield;
+      transition: border-color 0.12s;
     }
 
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
-
-    input[type="number"]:focus {
-      border-color: var(--accent);
-    }
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type="number"]:focus { border-color: var(--accent); }
 
     .edit-actions {
       display: flex;
+      align-items: center;
       gap: 8px;
-      margin-top: 4px;
+      padding-top: 2px;
     }
 
     .btn-save {
       background: var(--accent);
       color: #000;
       border: none;
-      border-radius: 7px;
-      padding: 7px 18px;
+      border-radius: 5px;
+      padding: 6px 16px;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
-      transition: opacity 0.15s;
+      font-family: inherit;
+      transition: opacity 0.12s;
     }
 
     .btn-save:hover { opacity: 0.85; }
@@ -323,70 +406,135 @@
     .btn-cancel {
       background: transparent;
       color: var(--text-dim);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      padding: 7px 14px;
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      padding: 6px 12px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
-      transition: background 0.15s, color 0.15s;
+      font-family: inherit;
+      transition: background 0.12s, color 0.12s;
     }
 
-    .btn-cancel:hover { background: var(--border); color: var(--text); }
+    .btn-cancel:hover { background: var(--border2); color: var(--text); }
 
-    .save-msg {
+    .saved-msg {
       font-size: 12px;
       color: var(--accent);
-      display: none;
-      align-items: center;
-      gap: 5px;
+      opacity: 0;
+      transition: opacity 0.2s;
     }
 
-    .save-msg.visible { display: flex; }
+    .saved-msg.show { opacity: 1; }
 
-    .total-bar {
-      margin-top: 24px;
-      padding: 14px 20px;
+    /* Footer bar */
+    .total-footer {
+      margin-top: 12px;
+      padding: 10px 14px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .total-bar-label {
+    .total-footer-label { font-size: 12px; color: var(--text-dim); }
+    .total-footer-value { font-size: 13px; font-weight: 700; color: var(--text); }
+
+    /* Error / loading */
+    .status-msg {
+      padding: 32px 0;
+      text-align: center;
       font-size: 13px;
       color: var(--text-dim);
     }
 
-    .total-bar-value {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--accent);
+    .error-msg {
+      padding: 14px 16px;
+      background: rgba(224, 82, 82, 0.08);
+      border: 1px solid rgba(224, 82, 82, 0.2);
+      border-radius: 6px;
+      color: var(--danger);
+      font-size: 13px;
     }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--border2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
   <div class="titlebar">
     <div class="titlebar-left">
-      <div class="logo">M</div>
-      <span class="titlebar-title">Modrinth Modifier</span>
-      <span class="titlebar-version" id="app-version"></span>
+      <div class="titlebar-icon">
+        <img id="titlebar-icon-img" src="" alt="M" />
+      </div>
+      <span class="titlebar-name">Modrinth Modifier</span>
+      <div class="titlebar-badges">
+        <span class="badge badge-beta">Beta</span>
+        <span class="badge badge-version" id="app-version"></span>
+      </div>
     </div>
     <div class="titlebar-controls">
-      <button class="titlebar-btn" id="btn-min" title="Minimize">&#8722;</button>
-      <button class="titlebar-btn close" id="btn-close" title="Close">&#x2715;</button>
+      <button class="titlebar-btn" id="btn-min">&#8722;</button>
+      <button class="titlebar-btn close" id="btn-close">&#x2715;</button>
     </div>
   </div>
 
-  <div class="content">
-    <div class="header">
-      <h1>Playtime Editor</h1>
-      <p>Manage playtime across your Modrinth profiles.</p>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="nav-section-label">Tools</div>
+      <div class="nav-item active" data-page="playtime">
+        <span class="nav-icon">&#9202;</span>
+        Playtime Editor
+      </div>
+      <div class="nav-item disabled" data-page="mods">
+        <span class="nav-icon">&#10022;</span>
+        Mod Manager
+        <span class="nav-soon">Soon</span>
+      </div>
+      <div class="nav-item disabled" data-page="launcher">
+        <span class="nav-icon">&#9654;</span>
+        Launcher
+        <span class="nav-soon">Soon</span>
+      </div>
+
+      <div class="nav-section-label" style="margin-top:8px">App</div>
+      <div class="nav-item disabled">
+        <span class="nav-icon">&#9881;</span>
+        Settings
+        <span class="nav-soon">Soon</span>
+      </div>
+
+      <div class="sidebar-footer">Modrinth Modifier</div>
     </div>
-    <div id="root"><div class="loading"><div class="spinner"></div> Loading profiles...</div></div>
+
+    <div class="main">
+
+      <!-- Playtime page -->
+      <div class="page active" id="page-playtime">
+        <div class="page-header">
+          <div class="page-title">Playtime Editor</div>
+          <div class="page-subtitle">Edit playtime for your Modrinth profiles. Close Modrinth before saving.</div>
+        </div>
+        <div class="page-body">
+          <div id="playtime-root"><div class="status-msg"><span class="spinner"></span>Loading profiles...</div></div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <script src="renderer.js"></script>

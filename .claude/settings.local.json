@@ -30,7 +30,8 @@
       "Bash(gh auth:*)",
       "Bash(gh repo:*)",
       "Bash(gh run:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(gh release:*)"
     ]
   }
 }

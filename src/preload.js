@@ -5,5 +5,6 @@ contextBridge.exposeInMainWorld('api', {
   setPlaytime: (data) => ipcRenderer.invoke('set-playtime', data),
   closeWindow: () => ipcRenderer.send('close-window'),
   minimizeWindow: () => ipcRenderer.send('minimize-window'),
-  getVersion: () => ipcRenderer.invoke('get-version')
+  getVersion: () => ipcRenderer.invoke('get-version'),
+  getIconPath: () => ipcRenderer.invoke('get-icon-path')
 })
