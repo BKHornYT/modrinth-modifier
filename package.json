@@ -1,0 +1,22 @@
+{
+  "name": "modrinth-modifier",
+  "version": "1.0.0",
+  "description": "Modrinth launcher mod manager",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-packager . \"Modrinth Modifier\" --platform=win32 --arch=x64 --out=dist --overwrite --asar --electron-version=33.4.11 --icon=assets/icon.ico",
+    "build": "npm run pack && node scripts/make-installer.js"
+  },
+  "devDependencies": {
+    "@electron/packager": "^19.1.0",
+    "@jimp/plugin-resize": "^1.6.0",
+    "electron": "^33.0.0",
+    "electron-winstaller": "^5.4.0",
+    "jimp": "^1.6.0",
+    "png-to-ico": "^3.0.1"
+  },
+  "dependencies": {
+    "sql.js": "^1.12.0"
+  }
+}

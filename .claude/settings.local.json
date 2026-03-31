@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebSearch",
+      "WebFetch(domain:www.mintlify.com)",
+      "WebFetch(domain:docs.modrinth.com)",
+      "WebFetch(domain:blog.modrinth.com)",
+      "WebFetch(domain:modrinth.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Read(//c/Users/boysg/Documents/Claude/bkrinth/$LOCALAPPDATA/**)",
+      "Read(//c/Users/boysg/Documents/Claude/bkrinth/$APPDATA/**)",
+      "Bash(sqlite3 app.db \"SELECT name, submitted_time_played, recent_time_played FROM profiles WHERE name LIKE ''%1.21%'';\")",
+      "Bash(sqlite3 app.db \"SELECT name, submitted_time_played, recent_time_played FROM profiles;\")",
+      "Bash(npm --version)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(CSC_IDENTITY_AUTO_DISCOVERY=false npm run build)",
+      "Bash(where makensis:*)",
+      "Read(//c/Users/boysg/Documents/Claude/bkrinth/$PROGRAMFILES/**)",
+      "Read(//c/Program Files \\(x86\\)/**)",
+      "WebFetch(domain:brandfetch.com)",
+      "Bash(node -e \":*)",
+      "Bash(node -e \"const J = require\\(''jimp''\\); console.log\\(Object.keys\\(J\\).slice\\(0,10\\)\\)\")",
+      "Bash(find C:/Users/boysg/Documents/Claude/bkrinth/node_modules/electron-builder -name makensis*)",
+      "Bash(winget list:*)",
+      "Bash(choco list:*)",
+      "Bash(winget install:*)",
+      "Bash(ls \"C:/Program Files \\(x86\\)/NSIS/makensis.exe\")",
+      "Bash(gh auth:*)"
+    ]
+  }
+}
