@@ -43,7 +43,7 @@ Section "Install"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModrinthModifier" "UninstallString" "$INSTDIR\Uninstall.exe"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModrinthModifier" "DisplayIcon" "$INSTDIR\Modrinth Modifier.exe"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModrinthModifier" "Publisher" "Modrinth Modifier"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModrinthModifier" "DisplayVersion" "1.0.3-beta"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModrinthModifier" "DisplayVersion" "1.0.4-beta"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModrinthModifier" "InstallLocation" "$INSTDIR"
   WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModrinthModifier" "NoModify" 1
   WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\ModrinthModifier" "NoRepair" 1

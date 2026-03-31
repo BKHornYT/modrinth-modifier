@@ -12,7 +12,8 @@ Planned features (sidebar shows "Soon"):
 - Settings
 
 GitHub: https://github.com/BKHornYT/modrinth-modifier
-Current released version: `v1.0.3-beta`
+License: GNU AGPL v3 (allows copying from Modrinth's AGPL-licensed launcher UI — modrinth/code)
+Current released version: `v1.0.4-beta`
 
 ## Rules
 - Always keep this `CLAUDE.md` up to date whenever purpose, stack, structure, or key decisions change.
@@ -20,6 +21,12 @@ Current released version: `v1.0.3-beta`
 - Always update `changes.md` after every change.
 - **Every git push must include a version bump** — increment patch by 1 each time (1.0.1 → 1.0.2 → 1.0.3). Never skip numbers. Update both `package.json` and `scripts/installer.nsi`.
 - **Before any UI changes:** copy current `src/` to `backup/vX.X.X/` first. Only publish to GitHub when the new version works.
+
+## UI Design
+- Ported directly from Modrinth App (`modrinth/code`, AGPL v3)
+- Layout: `app-grid-layout` (64px icon navbar + statusbar + content with `border-top-left-radius: 20px`)
+- Design tokens: exact dark mode surface/text/radius/shadow values from `packages/assets/styles/variables.scss`
+- Component styles: `.btn`, `.card`, inputs from `packages/assets/styles/classes.scss`
 
 ## Stack / Tech
 - **Electron 33** — desktop app framework
