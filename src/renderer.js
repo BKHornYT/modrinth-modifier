@@ -1,3 +1,11 @@
+function simpleMarkdown(text) {
+  return text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/^#{1,3} (.+)$/gm, '<strong>$1</strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^[-*] (.+)$/gm, '• $1')
+}
+
 function secsToHM(s) {
   const h = Math.floor(s / 3600)
   const m = Math.floor((s % 3600) / 60)
@@ -30,7 +38,7 @@ function renderProfiles(profiles) {
 
   const totalSecs = profiles.reduce((a, p) => a + p.submitted_time_played + p.recent_time_played, 0)
 
-  let html = '<div class="profile-list">'
+  let html = ''
 
   profiles.forEach((p, i) => {
     const total = p.submitted_time_played + p.recent_time_played
@@ -38,49 +46,51 @@ function renderProfiles(profiles) {
     const { h: rh, m: rm } = secsToHM(p.recent_time_played)
 
     html += `
-    <div class="profile-row" id="row-${i}">
-      <div class="profile-row-info">
-        <div class="profile-row-name">${escHtml(p.name)}</div>
-        <div class="profile-row-time">Total: <b id="time-${i}">${formatTime(total)}</b></div>
+    <div class="card">
+      <div class="profile-card-row" id="row-${i}">
+        <div class="profile-card-info">
+          <div class="profile-name">${escHtml(p.name)}</div>
+          <div class="profile-time">Total: <b id="time-${i}">${formatTime(total)}</b></div>
+        </div>
+        <button class="btn btn-secondary" data-action="edit" data-index="${i}">Edit</button>
       </div>
-      <button class="btn-edit" data-action="edit" data-index="${i}">Edit</button>
-    </div>
-    <div class="edit-panel" id="panel-${i}">
-      <div class="edit-row">
-        <span class="edit-lbl">Submitted</span>
-        <div class="time-fields">
-          <div class="time-field">
-            <input type="number" id="sub-h-${i}" value="${h}" min="0" />
-            <label>h</label>
-          </div>
-          <div class="time-field">
-            <input type="number" id="sub-m-${i}" value="${m}" min="0" max="59" />
-            <label>m</label>
+      <div class="edit-panel" id="panel-${i}">
+        <div class="edit-row">
+          <span class="edit-lbl">Submitted</span>
+          <div class="time-fields">
+            <div class="time-field">
+              <input type="number" id="sub-h-${i}" value="${h}" min="0" />
+              <label>h</label>
+            </div>
+            <div class="time-field">
+              <input type="number" id="sub-m-${i}" value="${m}" min="0" max="59" />
+              <label>m</label>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="edit-row">
-        <span class="edit-lbl">Recent (unsynced)</span>
-        <div class="time-fields">
-          <div class="time-field">
-            <input type="number" id="rec-h-${i}" value="${rh}" min="0" />
-            <label>h</label>
-          </div>
-          <div class="time-field">
-            <input type="number" id="rec-m-${i}" value="${rm}" min="0" max="59" />
-            <label>m</label>
+        <div class="edit-row">
+          <span class="edit-lbl">Recent (unsynced)</span>
+          <div class="time-fields">
+            <div class="time-field">
+              <input type="number" id="rec-h-${i}" value="${rh}" min="0" />
+              <label>h</label>
+            </div>
+            <div class="time-field">
+              <input type="number" id="rec-m-${i}" value="${rm}" min="0" max="59" />
+              <label>m</label>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="edit-actions">
-        <button class="btn-save" data-action="save" data-index="${i}">Save</button>
-        <button class="btn-cancel" data-action="cancel" data-index="${i}">Cancel</button>
-        <span class="saved-msg" id="msg-${i}">Saved</span>
+        <div class="edit-actions">
+          <button class="btn btn-primary" data-action="save" data-index="${i}">Save</button>
+          <button class="btn btn-transparent" data-action="cancel" data-index="${i}">Cancel</button>
+          <span class="saved-msg" id="msg-${i}">&#10003; Saved</span>
+        </div>
       </div>
     </div>`
   })
 
-  html += '</div>'
+  html += ''
   html += `<div class="total-footer">
     <span class="total-footer-label">Total across all profiles</span>
     <span class="total-footer-value">${formatTime(totalSecs)}</span>
@@ -107,13 +117,10 @@ function togglePanel(i, forceOpen) {
   // close all others
   document.querySelectorAll('.edit-panel.open').forEach(p => {
     p.classList.remove('open')
-    const idx = p.id.replace('panel-', '')
-    document.getElementById(`row-${idx}`)?.classList.remove('expanded')
   })
 
   if (open) {
     panel.classList.add('open')
-    row.classList.add('expanded')
   }
 }
 
@@ -145,8 +152,11 @@ async function init() {
   // Check for updates in background
   window.api.checkUpdate().then(release => {
     if (!release || !release.tag) return
-    const current = 'v' + version
-    if (release.tag === current) return
+    const parseVer = s => s.replace(/[^0-9.]/g, '').split('.').map(Number)
+    const [rM, rm, rp] = parseVer(release.tag)
+    const [cM, cm, cp] = parseVer(version)
+    const isNewer = rM > cM || (rM === cM && rm > cm) || (rM === cM && rm === cm && rp > cp)
+    if (!isNewer) return
 
     document.getElementById('update-tag').textContent = release.tag
     document.getElementById('update-banner').classList.add('show')
@@ -155,6 +165,19 @@ async function init() {
     const progress = document.getElementById('update-progress')
     const bar = document.getElementById('update-bar')
     const text = document.getElementById('update-text')
+
+    // Changelog toggle
+    if (release.body) {
+      const toggle = document.getElementById('update-notes-toggle')
+      const panel = document.getElementById('update-notes-panel')
+      const content = document.getElementById('update-notes-content')
+      toggle.style.display = ''
+      content.innerHTML = simpleMarkdown(release.body)
+      toggle.addEventListener('click', () => {
+        const open = panel.classList.toggle('open')
+        toggle.innerHTML = open ? "What&#39;s new &#9650;" : "What&#39;s new &#9660;"
+      })
+    }
 
     window.api.onUpdateProgress(pct => {
       bar.style.width = pct + '%'

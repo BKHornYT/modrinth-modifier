@@ -18,7 +18,7 @@ function createWindow() {
     minHeight: 400,
     frame: false,
     transparent: false,
-    backgroundColor: '#0d0d0d',
+    backgroundColor: '#16181c',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -104,7 +104,8 @@ ipcMain.handle('check-update', () => {
           resolve({
             tag: json.tag_name,
             url: json.html_url,
-            downloadUrl: asset ? asset.browser_download_url : null
+            downloadUrl: asset ? asset.browser_download_url : null,
+            body: json.body || ''
           })
         } catch { resolve(null) }
       })
