@@ -6,6 +6,9 @@ InstallDir "$LOCALAPPDATA\Modrinth Modifier"
 InstallDirRegKey HKCU "Software\Modrinth Modifier" "InstallDir"
 RequestExecutionLevel user
 
+Icon "..\assets\icon.ico"
+UninstallIcon "..\assets\icon.ico"
+
 !define MUI_ABORTWARNING
 !define MUI_ICON "..\assets\icon.ico"
 !define MUI_UNICON "..\assets\icon.ico"
