@@ -12,7 +12,7 @@ Planned features (sidebar shows "Soon"):
 - Settings
 
 GitHub: https://github.com/BKHornYT/modrinth-modifier
-Current released version: `v1.0.1-beta`
+Current released version: `v1.0.2-beta`
 
 ## Rules
 - Always keep this `CLAUDE.md` up to date whenever purpose, stack, structure, or key decisions change.
