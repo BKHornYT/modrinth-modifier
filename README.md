@@ -1,5 +1,5 @@
 # Modrinth Modifier
-
+![Lines](https://img.shields.io/endpoint?url=https://ghloc.vercel.app/api/modrinth-modifier/code/badge?style=flat&logoColor=white&color=c78aff&style=for-the-badge)
 A utility app for the [Modrinth](https://modrinth.com) launcher.
 
 ## Features
