@@ -144,15 +144,43 @@ async function init() {
 
   // Check for updates in background
   window.api.checkUpdate().then(release => {
-    if (!release) return
+    if (!release || !release.tag) return
     const current = 'v' + version
-    if (release.tag && release.tag !== current) {
-      document.getElementById('update-tag').textContent = release.tag
-      document.getElementById('update-banner').classList.add('show')
-      document.getElementById('update-btn').addEventListener('click', () => {
-        window.api.openUrl(release.url)
-      })
-    }
+    if (release.tag === current) return
+
+    document.getElementById('update-tag').textContent = release.tag
+    document.getElementById('update-banner').classList.add('show')
+
+    const btn = document.getElementById('update-btn')
+    const progress = document.getElementById('update-progress')
+    const bar = document.getElementById('update-bar')
+    const text = document.getElementById('update-text')
+
+    window.api.onUpdateProgress(pct => {
+      bar.style.width = pct + '%'
+    })
+
+    btn.addEventListener('click', async () => {
+      if (!release.downloadUrl) { window.api.openUrl(release.url); return }
+
+      btn.disabled = true
+      btn.textContent = 'Downloading...'
+      progress.classList.add('show')
+      text.innerHTML = 'Downloading update...'
+
+      const result = await window.api.downloadAndInstall(release.downloadUrl)
+
+      if (result.error) {
+        btn.disabled = false
+        btn.textContent = 'Retry'
+        text.innerHTML = 'Download failed. <b>' + result.error + '</b>'
+        progress.classList.remove('show')
+      } else {
+        btn.textContent = 'Installing...'
+        text.innerHTML = 'Installing — app will restart shortly.'
+        bar.style.width = '100%'
+      }
+    })
   })
 
   const result = await window.api.getProfiles()

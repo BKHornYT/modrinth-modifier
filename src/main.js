@@ -98,7 +98,12 @@ ipcMain.handle('check-update', () => {
       res.on('end', () => {
         try {
           const json = JSON.parse(data)
-          resolve({ tag: json.tag_name, url: json.html_url, name: json.name })
+          const asset = (json.assets || []).find(a => a.name.endsWith('.exe'))
+          resolve({
+            tag: json.tag_name,
+            url: json.html_url,
+            downloadUrl: asset ? asset.browser_download_url : null
+          })
         } catch { resolve(null) }
       })
     })
@@ -106,4 +111,43 @@ ipcMain.handle('check-update', () => {
     req.setTimeout(5000, () => { req.destroy(); resolve(null) })
   })
 })
+
+ipcMain.handle('download-and-install', (_, downloadUrl) => {
+  return new Promise((resolve, reject) => {
+    const tmp = path.join(os.tmpdir(), 'ModrinthModifier-update.exe')
+
+    function doGet(url, redirects) {
+      if (redirects > 5) return reject(new Error('Too many redirects'))
+      const parsed = new URL(url)
+      const mod = parsed.protocol === 'https:' ? https : require('http')
+      const req = mod.get(url, { headers: { 'User-Agent': 'modrinth-modifier' } }, res => {
+        if (res.statusCode === 301 || res.statusCode === 302) {
+          return doGet(res.headers.location, redirects + 1)
+        }
+        if (res.statusCode !== 200) return resolve({ error: 'HTTP ' + res.statusCode })
+        const total = parseInt(res.headers['content-length'] || '0')
+        let received = 0
+        const out = fs.createWriteStream(tmp)
+        res.on('data', chunk => {
+          received += chunk.length
+          if (total) win.webContents.send('update-progress', Math.round(received / total * 100))
+        })
+        res.pipe(out)
+        out.on('finish', () => {
+          out.close(() => {
+            const { spawn } = require('child_process')
+            spawn(tmp, ['/S'], { detached: true, stdio: 'ignore' }).unref()
+            resolve({ ok: true })
+            setTimeout(() => app.quit(), 1500)
+          })
+        })
+        out.on('error', e => resolve({ error: e.message }))
+      })
+      req.on('error', e => resolve({ error: e.message }))
+    }
+
+    doGet(downloadUrl, 0)
+  })
+})
+
 ipcMain.on('open-url', (_, url) => shell.openExternal(url))

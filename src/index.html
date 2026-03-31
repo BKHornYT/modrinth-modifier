@@ -486,6 +486,31 @@
       font-weight: 700;
       cursor: pointer;
       font-family: inherit;
+      flex-shrink: 0;
+    }
+
+    .update-banner-btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .update-progress {
+      flex: 1;
+      height: 3px;
+      background: var(--border2);
+      border-radius: 2px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .update-progress.show { display: block; }
+
+    .update-progress-bar {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.2s;
     }
 
     .spinner {
@@ -524,8 +549,9 @@
 
   <div class="update-banner" id="update-banner">
     <div class="update-banner-dot"></div>
-    <span>A new version is available: <b id="update-tag"></b></span>
-    <button class="update-banner-btn" id="update-btn">Download</button>
+    <span id="update-text">Update available: <b id="update-tag"></b></span>
+    <div class="update-progress" id="update-progress"><div class="update-progress-bar" id="update-bar"></div></div>
+    <button class="update-banner-btn" id="update-btn">Update</button>
   </div>
 
   <div class="layout">

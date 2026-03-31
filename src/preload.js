@@ -8,5 +8,7 @@ contextBridge.exposeInMainWorld('api', {
   getVersion: () => ipcRenderer.invoke('get-version'),
   getIconPath: () => ipcRenderer.invoke('get-icon-path'),
   checkUpdate: () => ipcRenderer.invoke('check-update'),
+  downloadAndInstall: (url) => ipcRenderer.invoke('download-and-install', url),
+  onUpdateProgress: (cb) => ipcRenderer.on('update-progress', (_, pct) => cb(pct)),
   openUrl: (url) => ipcRenderer.send('open-url', url)
 })
