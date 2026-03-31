@@ -17,6 +17,7 @@ GitHub: https://github.com/BKHornYT/modrinth-modifier
 - Always keep this `CLAUDE.md` up to date whenever purpose, stack, structure, or key decisions change.
 - Always update `task.md` when actively working.
 - Always update `changes.md` after every change.
+- **Every git push must include a version bump** — increment patch by 1 each time (1.0.1 → 1.0.2 → 1.0.3). Never skip numbers. Update both `package.json` and `scripts/installer.nsi`.
 - **Before any UI changes:** copy current `src/` to `backup/vX.X.X/` first. Only publish to GitHub when the new version works.
 
 ## Stack / Tech
