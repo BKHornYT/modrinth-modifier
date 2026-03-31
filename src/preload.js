@@ -6,5 +6,7 @@ contextBridge.exposeInMainWorld('api', {
   closeWindow: () => ipcRenderer.send('close-window'),
   minimizeWindow: () => ipcRenderer.send('minimize-window'),
   getVersion: () => ipcRenderer.invoke('get-version'),
-  getIconPath: () => ipcRenderer.invoke('get-icon-path')
+  getIconPath: () => ipcRenderer.invoke('get-icon-path'),
+  checkUpdate: () => ipcRenderer.invoke('check-update'),
+  openUrl: (url) => ipcRenderer.send('open-url', url)
 })

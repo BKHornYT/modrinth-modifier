@@ -1,7 +1,8 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, shell } = require('electron')
 const path = require('path')
 const os = require('os')
 const fs = require('fs')
+const https = require('https')
 
 let win
 
@@ -85,3 +86,24 @@ ipcMain.handle('get-version', () => app.getVersion())
 ipcMain.handle('get-icon-path', () => {
   return 'file://' + path.join(__dirname, '..', 'assets', 'icon.png').replace(/\\/g, '/')
 })
+ipcMain.handle('check-update', () => {
+  return new Promise(resolve => {
+    const req = https.get({
+      hostname: 'api.github.com',
+      path: '/repos/BKHornYT/modrinth-modifier/releases/latest',
+      headers: { 'User-Agent': 'modrinth-modifier' }
+    }, res => {
+      let data = ''
+      res.on('data', c => data += c)
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data)
+          resolve({ tag: json.tag_name, url: json.html_url, name: json.name })
+        } catch { resolve(null) }
+      })
+    })
+    req.on('error', () => resolve(null))
+    req.setTimeout(5000, () => { req.destroy(); resolve(null) })
+  })
+})
+ipcMain.on('open-url', (_, url) => shell.openExternal(url))

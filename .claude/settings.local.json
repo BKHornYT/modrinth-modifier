@@ -31,7 +31,9 @@
       "Bash(gh repo:*)",
       "Bash(gh run:*)",
       "Bash(mkdir:*)",
-      "Bash(gh release:*)"
+      "Bash(gh release:*)",
+      "Bash(git push:*)",
+      "Bash(git tag:*)"
     ]
   }
 }

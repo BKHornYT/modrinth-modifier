@@ -459,6 +459,35 @@
       font-size: 13px;
     }
 
+    /* Update banner */
+    .update-banner {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      background: rgba(27, 217, 106, 0.08);
+      border-bottom: 1px solid rgba(27, 217, 106, 0.2);
+      font-size: 12px;
+      color: var(--text-mid);
+      flex-shrink: 0;
+    }
+
+    .update-banner.show { display: flex; }
+    .update-banner-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+    .update-banner b { color: var(--accent); }
+    .update-banner-btn {
+      margin-left: auto;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
     .spinner {
       display: inline-block;
       width: 14px;
@@ -491,6 +520,12 @@
       <button class="titlebar-btn" id="btn-min">&#8722;</button>
       <button class="titlebar-btn close" id="btn-close">&#x2715;</button>
     </div>
+  </div>
+
+  <div class="update-banner" id="update-banner">
+    <div class="update-banner-dot"></div>
+    <span>A new version is available: <b id="update-tag"></b></span>
+    <button class="update-banner-btn" id="update-btn">Download</button>
   </div>
 
   <div class="layout">

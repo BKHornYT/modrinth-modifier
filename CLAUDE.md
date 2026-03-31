@@ -56,8 +56,12 @@ npm start          # dev mode
 1. Back up `src/` to `backup/vX.X.X/`
 2. Make changes, test locally with `npm start`
 3. Bump version in `package.json`
-4. `git tag vX.X.X && git push origin vX.X.X`
-5. GitHub Actions builds the installer and creates a GitHub Release automatically
+4. Tag format: `vX.X.X-beta` for beta, `vX.X.X` for stable
+5. `git tag vX.X.X-beta && git push origin vX.X.X-beta`
+6. GitHub Actions builds the installer and creates a GitHub Release automatically
+7. Tags containing "beta" or "alpha" are auto-marked as pre-release
+
+**Auto-update:** The app checks GitHub's latest release API on startup and shows a download banner if a newer version is available.
 
 ## Key Technical Notes
 - Modrinth DB: `%APPDATA%\Roaming\ModrinthApp\app.db` — `profiles` table, `submitted_time_played` + `recent_time_played` columns (seconds)

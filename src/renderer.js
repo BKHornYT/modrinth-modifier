@@ -142,6 +142,19 @@ async function init() {
   document.getElementById('app-version').textContent = 'v' + version
   document.getElementById('titlebar-icon-img').src = iconPath
 
+  // Check for updates in background
+  window.api.checkUpdate().then(release => {
+    if (!release) return
+    const current = 'v' + version
+    if (release.tag && release.tag !== current) {
+      document.getElementById('update-tag').textContent = release.tag
+      document.getElementById('update-banner').classList.add('show')
+      document.getElementById('update-btn').addEventListener('click', () => {
+        window.api.openUrl(release.url)
+      })
+    }
+  })
+
   const result = await window.api.getProfiles()
   const root = document.getElementById('playtime-root')
   if (result.error) {
