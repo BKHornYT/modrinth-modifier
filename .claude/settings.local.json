@@ -28,7 +28,9 @@
       "Bash(winget install:*)",
       "Bash(ls \"C:/Program Files \\(x86\\)/NSIS/makensis.exe\")",
       "Bash(gh auth:*)",
-      "Bash(gh repo:*)"
+      "Bash(gh repo:*)",
+      "Bash(gh run:*)",
+      "Bash(mkdir:*)"
     ]
   }
 }

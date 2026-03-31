@@ -6,7 +6,10 @@ const outDir = path.join(__dirname, '..', 'dist', 'installer')
 if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true })
 
 const nsi = path.join(__dirname, 'installer.nsi')
-const makensis = 'C:\\Program Files (x86)\\NSIS\\makensis.exe'
+// Support both local (winget) and CI (choco) NSIS install paths
+const makensis = fs.existsSync('C:\\Program Files (x86)\\NSIS\\makensis.exe')
+  ? 'C:\\Program Files (x86)\\NSIS\\makensis.exe'
+  : 'C:\\Program Files\\NSIS\\makensis.exe'
 
 try {
   execSync(`"${makensis}" "${nsi}"`, { stdio: 'inherit', cwd: __dirname })
