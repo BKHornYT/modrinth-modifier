@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install NSIS
+        run: choco install nsis --yes
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build installer
+        run: npm run build
+
+      - name: Get version
+        id: version
+        run: echo "version=${{ github.ref_name }}" >> $env:GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Modrinth Modifier ${{ steps.version.outputs.version }}
+          draft: false
+          prerelease: false
+          files: dist/installer/ModrinthModifier-setup.exe
+          body: |
+            ## Modrinth Modifier ${{ steps.version.outputs.version }}
+
+            ### Download
+            Download `ModrinthModifier-setup.exe` below and run it to install.
+
+            ### What's new
+            See [commits](https://github.com/BKHornYT/modrinth-modifier/commits/${{ github.ref_name }}) for changes in this release.
