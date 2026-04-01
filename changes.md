@@ -1,5 +1,12 @@
 # Changes
 
+## v1.0.5-beta
+- **WAL fix**: playtime changes now persist correctly — SQLite WAL/SHM files are deleted after every write so Modrinth can't replay stale data on next launch
+- **Reset button**: per-profile button to restore inputs to original DB values before saving
+- **Better profile cards**: stats line (Synced · Recent), thin relative playtime bar, total footer updates live after saving
+- **Settings page**: theme switcher (Dark, OLED Dark, Light, Sync with System), Run in background toggle (minimize to tray), Start with Windows toggle
+- **System tray**: app stays alive in tray when closed; right-click → Quit to fully exit
+
 ## v1.0.4-beta
 - **Full UI port from Modrinth App** (modrinth/code, AGPL v3):
   - Layout: grid with narrow 64px icon-only navbar + statusbar, content area has `border-top-left-radius: 20px` — direct port of their `app-grid-layout`

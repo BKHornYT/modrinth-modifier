@@ -4,16 +4,19 @@
 **Modrinth Modifier** is a utility/mod manager app for the Modrinth launcher. Currently in **beta**.
 
 Current features:
-- **Playtime Editor** — view and edit playtime on all Modrinth profiles via SQLite
+- **Playtime Editor** — view and edit playtime on all Modrinth profiles via SQLite; per-profile Reset button; thin relative playtime bars; total footer with live updates
+- **Launcher Tweaks** — page for modifying real Modrinth launcher settings (playtime hide/restore backed up to modifier_backup.json)
 
 Planned features (sidebar shows "Soon"):
 - Mod Manager — inject JS mods into a copy of the Modrinth launcher
-- Launcher — launch Modrinth from the app (needed for mod injection)
 - Settings
+
+**Key technical constraint:** Modrinth App is a compiled Tauri binary — web assets are baked into the .exe, no loose CSS/JS files to inject. The only external data we can modify is `app.db` and any config JSON files in `%APPDATA%\Roaming\ModrinthApp\`.
 
 GitHub: https://github.com/BKHornYT/modrinth-modifier
 License: GNU AGPL v3 (allows copying from Modrinth's AGPL-licensed launcher UI — modrinth/code)
-Current released version: `v1.0.4-beta`
+Current released version: `v1.0.4-beta` (released as stable/latest, file name retains "beta")
+In-progress (not yet released): `v1.0.5-beta`
 
 ## Rules
 - Always keep this `CLAUDE.md` up to date whenever purpose, stack, structure, or key decisions change.
@@ -41,7 +44,7 @@ src/
   main.js         — Electron main, IPC (profiles, playtime, version, icon path)
   preload.js      — contextBridge API surface
   index.html      — Sidebar layout, titlebar (version badge + BETA badge), page shells
-  renderer.js     — Profile list render, edit panel, save logic, nav (future)
+  renderer.js     — Profile list render, edit panel, save/reset logic, nav switching, launcher tweaks toggle
 assets/
   icon.png        — App icon (user's recolored Modrinth logo)
   icon.ico        — ICO for packager + NSIS
@@ -75,6 +78,8 @@ npm start          # dev mode
 ## Key Technical Notes
 - Modrinth DB: `%APPDATA%\Roaming\ModrinthApp\app.db` — `profiles` table, `submitted_time_played` + `recent_time_played` columns (seconds)
 - sql.js reads the whole DB into memory, modifies, writes back — Modrinth must be closed
+- After every DB write, `app.db-wal` and `app.db-shm` are deleted — otherwise SQLite replays the WAL on next open and overwrites changes
+- Hide/restore playtime backs up original values to `modifier_backup.json` next to `app.db`; presence of this file = hidden state
 - Icon is loaded via `file://` IPC call (`get-icon-path`) since `../assets/` doesn't resolve inside asar
 - NSIS installer: user-level install (no UAC), installs to `%LOCALAPPDATA%\Modrinth Modifier`, desktop + Start Menu shortcuts, Add/Remove Programs entry
 - electron-builder was abandoned — its winCodeSign download fails on Windows without Developer Mode (symlink permission issue)

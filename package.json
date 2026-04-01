@@ -1,6 +1,6 @@
 {
   "name": "modrinth-modifier",
-  "version": "1.0.4-beta",
+  "version": "1.0.5-beta",
   "description": "Modrinth launcher mod manager",
   "main": "src/main.js",
   "scripts": {

@@ -10,5 +10,12 @@ contextBridge.exposeInMainWorld('api', {
   checkUpdate: () => ipcRenderer.invoke('check-update'),
   downloadAndInstall: (url) => ipcRenderer.invoke('download-and-install', url),
   onUpdateProgress: (cb) => ipcRenderer.on('update-progress', (_, pct) => cb(pct)),
-  openUrl: (url) => ipcRenderer.send('open-url', url)
+  openUrl: (url) => ipcRenderer.send('open-url', url),
+  checkHidden: () => ipcRenderer.invoke('check-hidden'),
+  hidePlaytime: () => ipcRenderer.invoke('hide-playtime'),
+  restorePlaytime: () => ipcRenderer.invoke('restore-playtime'),
+  getSettings: () => ipcRenderer.invoke('get-settings'),
+  setSettings: (s) => ipcRenderer.invoke('set-settings', s),
+  getStartup: () => ipcRenderer.invoke('get-startup'),
+  setStartup: (e) => ipcRenderer.invoke('set-startup', e)
 })

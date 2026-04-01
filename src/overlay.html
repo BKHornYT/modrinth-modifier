@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline'; script-src 'self'" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: transparent; height: 48px; overflow: hidden; }
+    body {
+      -webkit-app-region: drag;
+      user-select: none;
+      font-family: 'Inter', -apple-system, 'Segoe UI Variable', 'Segoe UI', sans-serif;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(22, 24, 28, 0.93);
+      border: 1px solid rgba(27, 217, 106, 0.22);
+      border-radius: 999px;
+      padding: 0 14px 0 12px;
+      height: 44px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      white-space: nowrap;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1bd96a;
+      flex-shrink: 0;
+      box-shadow: 0 0 6px rgba(27, 217, 106, 0.6);
+    }
+    .label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #96a2b0;
+    }
+    .value {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffffff;
+      min-width: 36px;
+    }
+    .close-btn {
+      -webkit-app-region: no-drag;
+      background: transparent;
+      border: none;
+      color: #96a2b0;
+      cursor: pointer;
+      font-size: 11px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      transition: background 0.12s, color 0.12s;
+      margin-left: 2px;
+      flex-shrink: 0;
+    }
+    .close-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="pill">
+    <div class="dot"></div>
+    <span class="label">Total playtime</span>
+    <span class="value" id="time">—</span>
+    <button class="close-btn" id="close-btn">✕</button>
+  </div>
+  <script>
+    function formatTime(secs) {
+      const h = Math.floor(secs / 3600)
+      const m = Math.floor((secs % 3600) / 60)
+      if (h === 0 && m === 0) return '0m'
+      const parts = []
+      if (h > 0) parts.push(h + 'h')
+      if (m > 0) parts.push(m + 'm')
+      return parts.join(' ')
+    }
+    window.overlay.onData(data => {
+      document.getElementById('time').textContent = formatTime(data.total)
+    })
+    document.getElementById('close-btn').addEventListener('click', () => window.overlay.hide())
+  </script>
+</body>
+</html>
