@@ -38,7 +38,8 @@ jobs:
         with:
           name: Modrinth Modifier ${{ steps.version.outputs.version }}
           draft: false
-          prerelease: ${{ contains(github.ref_name, 'beta') || contains(github.ref_name, 'alpha') }}
+          prerelease: false
+          make_latest: true
           files: dist/installer/ModrinthModifier-setup.exe
           body: |
             ## Modrinth Modifier ${{ steps.version.outputs.version }}
